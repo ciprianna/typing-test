@@ -8,7 +8,7 @@
   let timerStarted = false;
   let test = '';
   let removeSecond;
-  let sentence = randomWords({ exactly: 100, join: ' ' });
+  let sentence = randomWords({ exactly: 30, join: ' ' });
   let goal = 45;
 
   const adjustTime = () => {
@@ -28,6 +28,27 @@
     test = '';
     clearTimeout(removeSecond);
     startTime = 60;
+    document.querySelector('label').innerHTML = sentence;
+  }
+
+  const onType = (e) => {
+    const value = e.currentTarget.value;
+    length = value.length;
+    // Try to convert characters to px value for scrolling
+    // document.querySelector('#sentence').scrollTo({left: length, behavior: 'smooth'})
+    const label = document.querySelector('label');
+    const alreadyTyped = label.innerText.split('');
+     const styled = alreadyTyped.map((letter, i) => {
+      if (i < length) {
+        if(letter === value[i]) {
+          return `<span class="correct">${letter}</span>`
+        } else {
+          return `<span class="error">${letter}</span>`
+        }
+      }
+      return letter;
+    });
+    label.innerHTML = styled.join('');
   }
 
   // TODO -
@@ -41,7 +62,8 @@
   // 8. Animate shark to match wpm goal
   // 9. Success and fail results/animations
   // 10. Better designs
-  // 11. Music
+  // 11. Animation mode for letters
+  // 12. Music
 
 </script>
 
@@ -60,22 +82,25 @@
   <h2 class="inline">Timer: {startTime}s</h2>
 </div>
 
-<p>{sentence}</p>
+<div class="typing-area">
+  <!-- {#each sentences as sent, i} -->
+    <label for="type" id={`sentence`}>{sentence}</label>
+    <textarea id="type" bind:value={test} on:keyup={onType} disabled={startTime === 0} />
+  <!-- {/each} -->
+</div>
 
-<textarea id="textfield" bind:value={test} on:keyup={e => { length = e.currentTarget.value.length }} disabled={startTime === 0} />
 
 <style global>
-	* {
+	body {
 		background-color: aquamarine;
 		font-family: Arial, Helvetica, sans-serif;
     text-align: center;
     padding-left: 30px;
     padding-right: 30px;
 	}
-  textarea {
-    width: 80%;
-    margin: 30px;
-    min-height: 50px;
+  input {
+    width: 100%;
+    min-height: 30px;
   }
 
   .flex-centered {
@@ -87,5 +112,36 @@
   .inline {
     display: inline;
     margin: 20px;
+  }
+
+  .correct {
+    color: forestgreen;
+    /* font-weight: bold; */
+  }
+
+  .error {
+    color: red;
+    /* font-weight: bold; */
+  }
+
+  .typing-area,
+  .typing-area textarea {
+    font-size: 24px;
+    line-height: 30px;
+    text-align: start;
+  }
+
+  .typing-area label {
+    position: relative;
+    top: 94px;
+    left: 3px;
+    font-family: monospace;
+    color: slategray;
+  }
+
+  .typing-area textarea {
+    width: 100%;
+    background: transparent;
+    height: 500px;
   }
 </style>
